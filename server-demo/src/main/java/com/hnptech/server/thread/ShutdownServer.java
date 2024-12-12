@@ -11,12 +11,11 @@ public class ShutdownServer {
 
         // 종료 단계 분할
         if(step == 0){
-            System.out.println("[shutdown step 1]");
+            System.out.println("[SYSTEM] 서버 소켓 닫음");
+            MultiThread.stopServer();
             step++;
         }else if(step == 1){
             System.out.println("[shutdown step 2]");
-
-            System.exit(0);
         }
         
     }

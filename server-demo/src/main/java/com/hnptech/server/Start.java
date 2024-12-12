@@ -20,7 +20,7 @@ public class Start {
     static {
         try{
             // 정적 파일로부터 데이터베이스 정보 로딩
-            FileInputStream db = new FileInputStream("config/dbhost.properties");
+            FileInputStream db = new FileInputStream("server-demo/config/dbhost.properties");
             Properties dbProbs = new Properties();
             dbProbs.load(db);
             db.close();
@@ -30,6 +30,13 @@ public class Start {
             SQL_USER = new String(dbProbs.getProperty("user"));
             SQL_PASSWORD = new String(dbProbs.getProperty("password"));
             PORT = 8080;
+
+            Runtime.getRuntime().addShutdownHook(new Thread(()->{
+                System.out.println("[SYSTEM] 서버가 종료됩니다.");
+                ShutdownServer.getInstance().run();
+                ShutdownServer.getInstance().run();
+                System.exit(0);
+            }));
         } catch(FileNotFoundException e){
             e.printStackTrace();
         } catch(IOException e){
@@ -39,12 +46,12 @@ public class Start {
     public static final Start instance = new Start();
     
     public void run() {
-        System.out.println("[SERVER] 커넥션 풀 로드");
+        System.out.println("[SYSTEM] 커넥션 풀 로드");
         ConnectionPool conn = null;
         try {
             conn = ConnectionPool.create(SQL_URL, SQL_USER, SQL_PASSWORD);
         } catch (SQLException e) {
-            System.err.println("[SERVER] 커넥션 풀 로드 실패 "); ;
+            System.err.println("[SYSTEM] 커넥션 풀 로드 실패 "); ;
         }
 
         MultiThread.startServer();
