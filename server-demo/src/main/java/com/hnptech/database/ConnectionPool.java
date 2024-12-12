@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hnptech.server.Start;
+
 public class ConnectionPool {
     private List<Connection> availableConnections = new ArrayList<>();
     private List<Connection> usedConnections = new ArrayList<>();
@@ -15,10 +17,25 @@ public class ConnectionPool {
     private String user = null;
     private String password = null;
 
-    public ConnectionPool(String url, String user, String passowrd) throws SQLException{
-        this.url = url;
-        this.user = user;
-        this.password = passowrd;
+    private static ConnectionPool instance;
+    
+    public static ConnectionPool getInstance(){
+
+        if(instance == null){
+            try {
+                instance = new ConnectionPool();
+            } catch (SQLException e) {
+                System.err.println("[SYSTEM] 데이터베이스 접속 실패 - " + e.getMessage());
+            }
+        }
+        return instance;
+    }
+
+    private ConnectionPool() throws SQLException{
+        this.url = Start.SQL_URL;
+        this.user = Start.SQL_USER;
+        this.password = Start.SQL_PASSWORD;
+
         for(int i = 0; i < INITIAL_POOL_SIZE; i++){
             availableConnections.add(createConnection());
         }
@@ -54,17 +71,21 @@ public class ConnectionPool {
     }
 
     // 모든 커넥션 종료
-    public void shutdown() throws SQLException{
+    public void shutdown(){
+        System.out.println("[SYSTEM] 커넥션 풀 종료");
         for(Connection connection : availableConnections){
-            connection.close();
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         for(Connection connection : usedConnections){
-            connection.close();
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-    }
-
-    // 기본 Pool 생성
-    public static ConnectionPool create(String url, String user, String password) throws SQLException{
-        return new ConnectionPool(url, user, password);
     }
 }

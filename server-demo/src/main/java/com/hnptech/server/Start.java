@@ -47,13 +47,8 @@ public class Start {
     
     public void run() {
         System.out.println("[SYSTEM] 커넥션 풀 로드");
-        ConnectionPool conn = null;
-        try {
-            conn = ConnectionPool.create(SQL_URL, SQL_USER, SQL_PASSWORD);
-        } catch (SQLException e) {
-            System.err.println("[SYSTEM] 커넥션 풀 로드 실패 "); ;
-        }
-
+        ConnectionPool conn = ConnectionPool.getInstance();
+    
         MultiThread.startServer();
         
     }
