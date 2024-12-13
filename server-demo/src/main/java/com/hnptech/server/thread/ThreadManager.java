@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 import com.hnptech.server.handler.ClientHandler;
 
-public class ManageService {
+public class ThreadManager {
     private static final int THREAD_POOL_SIZE = 10; // 스레드 풀 크기
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
     private static ServerSocket serverSocket;

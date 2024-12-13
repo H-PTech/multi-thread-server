@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.hnptech.database.ConnectionPool;
-import com.hnptech.server.thread.ManageService;
+import com.hnptech.server.thread.ThreadManager;
 import com.hnptech.server.thread.ShutdownServer;
 
 public class Start {
@@ -52,7 +52,7 @@ public class Start {
         ConnectionPool connectionPool = ConnectionPool.getInstance();
 
         System.out.println("[SYSTEM] 서버 실행 중...");
-        ManageService.start(PORT); // ManageService를 통해 서버 시작
+        ThreadManager.start(PORT); // ManageService를 통해 서버 시작
     }
 
     public static void main(String[] args) {

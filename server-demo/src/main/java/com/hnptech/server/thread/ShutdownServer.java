@@ -14,7 +14,7 @@ public class ShutdownServer {
         // 종료 단계 분할
         if(step == 0){
             System.out.println("[SYSTEM] 서버 소켓 닫음");
-            ManageService.stop();
+            ThreadManager.stop();
             ConnectionPool.getInstance().shutdown();
             step++;
         }else if(step == 1){
