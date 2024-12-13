@@ -1,46 +1,49 @@
 package com.hnptech.server.handler;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
-public class ClientHandler implements Runnable{
-    private Socket clienSocket;
+public class ClientHandler implements Runnable {
+    private final Socket clientSocket;
 
-    public ClientHandler(Socket clienSocket){
-        this.clienSocket = clienSocket;
+    public ClientHandler(Socket clientSocket) {
+        this.clientSocket = clientSocket;
     }
 
     @Override
-    public void run(){
-        try(BufferedReader in = new BufferedReader(new InputStreamReader(clienSocket.getInputStream()));
-            PrintWriter out = new PrintWriter(clienSocket.getOutputStream(), true)){
-            
-                String message;
-                while((message = in.readLine()) != null){
-                    System.out.println("[CLIENT] " + message);
+    public void run() {
+        try (InputStream in = clientSocket.getInputStream();
+             OutputStream out = clientSocket.getOutputStream()) {
+            // 클라이언트 요청 처리
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                String received = new String(buffer, 0, bytesRead);
+                System.out.println("[SERVER] 클라이언트 요청: " + received);
 
-                    // 클라이언트에게 응답
-                    out.println("[SERVER RESPONSE]" + message);
-
-                    // 종료 확인
-                    if(message.equalsIgnoreCase("exit")){
-                        System.out.println("[SERVER] 클라이언트 연결 종료");
-                        break;
-                    }
-                }
-                
-        } catch(IOException e){
-            System.err.println("[SERVER] 클라이언트 처리 중 오류 발생");
-        } finally{
-            try{
-                clienSocket.close();
-            } catch(IOException e){
-                System.err.println("[SERVER] 클라이언트 소켓 닫기 실패");
+                // 응답 처리
+                String response = "서버 응답: " + received;
+                out.write(response.getBytes());
+                out.flush();
             }
+        } catch (IOException e) {
+            System.err.println("[CLIENT] 처리 중 오류 발생: " + e.getMessage());
+        } finally {
+            closeSocket();
         }
+    }
 
+    // 소켓 닫기
+    private void closeSocket() {
+        try {
+            if (clientSocket != null && !clientSocket.isClosed()) {
+                clientSocket.close();
+                System.out.println("[CLIENT] 소켓이 닫혔습니다.");
+            }
+        } catch (IOException e) {
+            System.err.println("[CLIENT] 소켓 닫기 실패: " + e.getMessage());
+        }
     }
 }
